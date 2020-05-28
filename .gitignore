@@ -27,8 +27,9 @@ codegen/
 # Simulink cache files
 *.slxc
 
-# COMSOL solved models
-*solved.mph
+# COMSOL model files: export reference model files to matlab
+*.mph
+!/gitMPHs/*.mph
 
 # Exported data
 *.mat
