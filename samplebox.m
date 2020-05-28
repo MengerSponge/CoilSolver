@@ -1,8 +1,13 @@
-function out = samplebox
+function out = samplebox(dontsolve)
 %
-% samplebox.m for planeContour coilsolver.
+% samplebox_full.m
 %
-% Model exported on May 28 2020, 14:29 by COMSOL 5.5.0.359.
+% Model exported on May 28 2020, 14:58 by COMSOL 5.5.0.359.
+
+if ~exist('dontsolve','var') || isempty(dontsolve)
+  dontsolve=false;
+end
+
 
 import com.comsol.model.*
 import com.comsol.model.util.*
@@ -36,7 +41,7 @@ model.component('comp1').geom('geom1').create('blk1', 'Block');
 model.component('comp1').geom('geom1').feature('blk1').label('World');
 model.component('comp1').geom('geom1').feature('blk1').set('base', 'center');
 model.component('comp1').geom('geom1').feature('blk1').set('size', [3 3 3]);
-model.component('comp1').geom('geom1').feature('blk1').set('layername', {'Layer 1'});
+model.component('comp1').geom('geom1').feature('blk1').set('layername', 'Layer 1');
 model.component('comp1').geom('geom1').feature('blk1').setIndex('layer', '.5', 0);
 model.component('comp1').geom('geom1').feature('blk1').set('layerleft', true);
 model.component('comp1').geom('geom1').feature('blk1').set('layerright', true);
@@ -168,7 +173,7 @@ model.component('comp1').material('mat1').propertyGroup('def').func('k').set('pi
 model.component('comp1').material('mat1').propertyGroup('def').func('k').set('argunit', 'K');
 model.component('comp1').material('mat1').propertyGroup('def').func('k').set('fununit', 'W/(m*K)');
 model.component('comp1').material('mat1').propertyGroup('def').func('cs').set('expr', 'sqrt(1.4*R_const[K*mol/J]/0.02897*T)');
-model.component('comp1').material('mat1').propertyGroup('def').func('cs').set('args', {'T'});
+model.component('comp1').material('mat1').propertyGroup('def').func('cs').set('args', 'T');
 model.component('comp1').material('mat1').propertyGroup('def').func('cs').set('dermethod', 'manual');
 model.component('comp1').material('mat1').propertyGroup('def').func('cs').set('argunit', 'K');
 model.component('comp1').material('mat1').propertyGroup('def').func('cs').set('fununit', 'm/s');
@@ -181,7 +186,7 @@ model.component('comp1').material('mat1').propertyGroup('def').func('an1').set('
 model.component('comp1').material('mat1').propertyGroup('def').func('an1').set('plotargs', {'pA' '101325' '101325'; 'T' '273.15' '373.15'});
 model.component('comp1').material('mat1').propertyGroup('def').func('an2').set('funcname', 'muB');
 model.component('comp1').material('mat1').propertyGroup('def').func('an2').set('expr', '0.6*eta(T)');
-model.component('comp1').material('mat1').propertyGroup('def').func('an2').set('args', {'T'});
+model.component('comp1').material('mat1').propertyGroup('def').func('an2').set('args', 'T');
 model.component('comp1').material('mat1').propertyGroup('def').func('an2').set('argunit', 'K');
 model.component('comp1').material('mat1').propertyGroup('def').func('an2').set('fununit', 'Pa*s');
 model.component('comp1').material('mat1').propertyGroup('def').func('an2').set('plotargs', {'T' '200' '1600'});
@@ -361,12 +366,12 @@ model.component('comp1').material('mat2').propertyGroup('BHCurve').addInput('mag
 model.component('comp1').material('mat2').propertyGroup('BHCurve').addInput('magneticfluxdensity');
 
 model.component('comp1').physics('mfnc').feature('mflx1').set('Bn', '(1e-6*z-3e-7*x)*1[T]/1[m]');
-model.component('comp1').physics('mfnc').feature('mflx1').set('B0', {'-1e-6[T]*x/(1[m])'; '0'; '-1e-6[T]*z/(1[m])'});
+model.component('comp1').physics('mfnc').feature('mflx1').set('B0', {'-1e-6[T]*x/(1[m])' '0' '-1e-6[T]*z/(1[m])'});
 model.component('comp1').physics('mfnc').feature('ms1').set('murbnd_mat', 'userdef');
 model.component('comp1').physics('mfnc').feature('ms1').set('murbnd', '1.5e4');
-model.component('comp1').physics('mfnc2').prop('BackgroundField').set('Hb', {'0'; '0'; '-4*pi/10'});
+model.component('comp1').physics('mfnc2').prop('BackgroundField').set('Hb', {'0' '0' '-4*pi/10'});
 model.component('comp1').physics('mfnc2').feature('mflx1').set('Bn', '-(1e-6*z-3e-7*x)*1[T]/1[m]');
-model.component('comp1').physics('mfnc2').feature('mflx1').set('B0', {'-1e-6[T]*x/(1[m])'; '0'; '-1e-6[T]*z/(1[m])'});
+model.component('comp1').physics('mfnc2').feature('mflx1').set('B0', {'-1e-6[T]*x/(1[m])' '0' '-1e-6[T]*z/(1[m])'});
 
 model.component('comp1').mesh('mesh1').feature('ftri1').feature('size1').set('hauto', 1);
 model.component('comp1').mesh('mesh1').feature('ftri1').feature('size1').set('custom', 'on');
@@ -381,5 +386,84 @@ model.study('std1').feature('stat').set('activate', {'mfnc' 'on' 'mfnc2' 'off' '
 model.study('std1').feature('stat1').set('activate', {'mfnc' 'off' 'mfnc2' 'on' 'frame:spatial1' 'on' 'frame:material1' 'on'});
 model.study('std1').feature('stat').label('outer_Vm');
 model.study('std1').feature('stat1').label('inner_Vm2');
+
+model.sol.create('sol1');
+model.sol('sol1').study('std1');
+
+model.study('std1').feature('stat').set('notlistsolnum', 1);
+model.study('std1').feature('stat').set('notsolnum', '1');
+model.study('std1').feature('stat').set('listsolnum', 1);
+model.study('std1').feature('stat').set('solnum', '1');
+model.study('std1').feature('stat1').set('notlistsolnum', 1);
+model.study('std1').feature('stat1').set('notsolnum', 'auto');
+model.study('std1').feature('stat1').set('listsolnum', 1);
+model.study('std1').feature('stat1').set('solnum', 'auto');
+
+model.sol('sol1').create('st1', 'StudyStep');
+model.sol('sol1').feature('st1').set('study', 'std1');
+model.sol('sol1').feature('st1').set('studystep', 'stat');
+model.sol('sol1').create('v1', 'Variables');
+model.sol('sol1').feature('v1').set('control', 'stat');
+model.sol('sol1').create('s1', 'Stationary');
+model.sol('sol1').feature('s1').create('fc1', 'FullyCoupled');
+model.sol('sol1').feature('s1').create('i1', 'Iterative');
+model.sol('sol1').feature('s1').feature('i1').set('linsolver', 'cg');
+model.sol('sol1').feature('s1').feature('i1').create('mg1', 'Multigrid');
+model.sol('sol1').feature('s1').feature('i1').feature('mg1').set('prefun', 'amg');
+model.sol('sol1').feature('s1').feature('fc1').set('linsolver', 'i1');
+model.sol('sol1').feature('s1').feature.remove('fcDef');
+model.sol('sol1').create('su1', 'StoreSolution');
+model.sol('sol1').create('st2', 'StudyStep');
+model.sol('sol1').feature('st2').set('study', 'std1');
+model.sol('sol1').feature('st2').set('studystep', 'stat1');
+model.sol('sol1').create('v2', 'Variables');
+model.sol('sol1').feature('v2').set('initmethod', 'sol');
+model.sol('sol1').feature('v2').set('initsol', 'sol1');
+model.sol('sol1').feature('v2').set('notsolmethod', 'sol');
+model.sol('sol1').feature('v2').set('notsol', 'sol1');
+model.sol('sol1').feature('v2').set('control', 'stat1');
+model.sol('sol1').create('s2', 'Stationary');
+model.sol('sol1').feature('s2').create('fc1', 'FullyCoupled');
+model.sol('sol1').feature('s2').create('i1', 'Iterative');
+model.sol('sol1').feature('s2').feature('i1').set('linsolver', 'cg');
+model.sol('sol1').feature('s2').feature('i1').create('mg1', 'Multigrid');
+model.sol('sol1').feature('s2').feature('i1').feature('mg1').set('prefun', 'amg');
+model.sol('sol1').feature('s2').feature('fc1').set('linsolver', 'i1');
+model.sol('sol1').feature('s2').feature.remove('fcDef');
+model.sol('sol1').feature('v2').set('notsolnum', 'auto');
+model.sol('sol1').feature('v2').set('notsolvertype', 'solnum');
+model.sol('sol1').feature('v2').set('notlistsolnum', {'1'});
+model.sol('sol1').feature('v2').set('notsolnum', 'auto');
+model.sol('sol1').feature('v2').set('notlistsolnum', {'1'});
+model.sol('sol1').feature('v2').set('notsolnum', 'auto');
+model.sol('sol1').feature('v2').set('control', 'stat1');
+model.sol('sol1').feature('v2').set('solnum', 'auto');
+model.sol('sol1').feature('v2').set('solvertype', 'solnum');
+model.sol('sol1').feature('v2').set('listsolnum', {'1'});
+model.sol('sol1').feature('v2').set('solnum', 'auto');
+model.sol('sol1').feature('v2').set('listsolnum', {'1'});
+model.sol('sol1').feature('v2').set('solnum', 'auto');
+model.sol('sol1').attach('std1');
+
+model.result.create('pg1', 'PlotGroup3D');
+model.result('pg1').label('Magnetic Flux Density Norm (mfnc)');
+model.result('pg1').set('data', 'dset1');
+model.result('pg1').feature.create('mslc1', 'Multislice');
+model.result('pg1').feature('mslc1').set('expr', 'mfnc.normB');
+model.result('pg1').feature('mslc1').set('colortable', 'RainbowLight');
+model.result('pg1').feature('mslc1').set('data', 'parent');
+model.result.create('pg2', 'PlotGroup3D');
+model.result('pg2').label('Magnetic Flux Density Norm (mfnc2)');
+model.result('pg2').set('data', 'dset1');
+model.result('pg2').feature.create('mslc1', 'Multislice');
+model.result('pg2').feature('mslc1').set('expr', 'mfnc2.normB');
+model.result('pg2').feature('mslc1').set('colortable', 'RainbowLight');
+model.result('pg2').feature('mslc1').set('data', 'parent');
+
+if ~dontsolve
+    model.sol('sol1').runAll;
+
+    model.result('pg1').run;
+end
 
 out = model;
