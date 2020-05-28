@@ -1,6 +1,6 @@
 function out = samplebox
 %
-% samplebox.m
+% samplebox.m for planeContour coilsolver.
 %
 % Model exported on May 28 2020, 14:29 by COMSOL 5.5.0.359.
 
