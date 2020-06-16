@@ -62,8 +62,8 @@ for i = 1:length(data)
 end
 
 %Generate vector of equipotential values
-tempLevels = linspace(Vmin,Vmax,nlevels+1);
-levels = tempLevels(2:nlevels);
+tempLevels = linspace(Vmin,Vmax,nlevels+2);
+levels = tempLevels(2:nlevels+1);
 
 % Close all figures--we're going to make new ones and we want to know their
 % indices when they're created.
