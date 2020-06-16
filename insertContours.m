@@ -1,45 +1,80 @@
-function insertContours(model,pathtosectionwise,facedata)
+function insertContours(model,facedata,selname)
+% function insertContours(model,facedata)
+% 
+% Takes contours contained in 'facedata' and inserts them with insertWire()
+% to 'model', grouping them by 'selname'
+% ARR 2020.06.16
 
-if ~exist('pathtosectionwise','var') || isempty(pathtosectionwise)
-    disp('No sectionwise data supplied. Generating file.')
-    if ~exist('facedata','var') || isempty(facedata)
-        disp('No contour data supplied. Calculating contours with default settings')
-        facedata = plane_contour(model, 'sel',[],[0,0,0],10,true);
-    end
-    [filepath,~,~] = fileparts(char(model.getFilePath()));
-    pathtosectionwise = makeSectionwise(facedata, [], filepath);
+if ~exist('facedata','var') || isempty(facedata)
+    disp('No contour data supplied. Calculating contours with default settings')
+    facedata = plane_contour(model, 'sel',[],[0,0,0],10,true);
+end
+
+if ~exist('selname','var') || isempty(selname)
+    disp('No selection set specified. Assigning wires to "windings"')
+    selname = 'windings';
 end
 
 geonode = model.component('comp1').geom('geom1');
 
-disp('Importing Windings');
-selName = 'windings';
-icname = 'autogenWire';
 
-labels = geonode.feature.tags;
+% First identify wires in model and find an adjacent index.
+geonode = model.component('comp1').geom('geom1');
 
-alreadysetup = false;
-for i=1:length(labels)
-    if strcmp(char(labels(i)),icname)
-        alreadysetup=true;
+objectlabels = char(geonode.feature.tags);
+searching=true;
+wireN = 1;
+
+while searching
+   if any(ismember(objectlabels,['ic' num2str(wireN)],'rows'))
+       wireN = wireN + 1;
+   else
+       searching = false;
+   end
+end
+
+faces = length(facedata);
+for i=1:faces
+    M = facedata{i}{4};
+    levels = length(facedata{i}{5});
+    for j = 1:levels
+        isowires = length(facedata{i}{5}{j});
+        for k = 1:isowires
+           contourdata = affineRestore(facedata{i}{5}{j}{k}(1,:),facedata{i}{5}{j}{k}(2,:),M);
+           insertWire(model,contourdata,'windings',wireN);
+           wireN = wireN + 1;
+        end
     end
 end
 
-if ~alreadysetup
-    disp('First time through. Will generate selection.')
-    geonode.selection.create(selName, 'CumulativeSelection');
-    geonode.selection(selName).label('wires');
-
-    geonode.create(icname, 'InterpolationCurve');
-    geonode.feature(icname).set('contributeto', selName);
-    geonode.feature(icname).set('source', 'file');
-    geonode.feature(icname).set('filename', pathtosectionwise);
-    geonode.feature(icname).set('struct', 'sectionwise');
-    geonode.feature(icname).set('rtol', 0.001);    
-else
-    disp('Reusing selection. Modifying sectionwise file path and rebuilding.')
-    geonode.feature(icname).set('filename',pathtosectionwise);
-end
+% disp('Importing Windings');
+% selName = 'windings';
+% icname = 'autogenWire';
+% 
+% labels = geonode.feature.tags;
+% 
+% alreadysetup = false;
+% for i=1:length(labels)
+%     if strcmp(char(labels(i)),icname)
+%         alreadysetup=true;
+%     end
+% end
+% 
+% if ~alreadysetup
+%     disp('First time through. Will generate selection.')
+%     geonode.selection.create(selName, 'CumulativeSelection');
+%     geonode.selection(selName).label('wires');
+% 
+%     geonode.create(icname, 'InterpolationCurve');
+%     geonode.feature(icname).set('contributeto', selName);
+%     geonode.feature(icname).set('source', 'file');
+%     geonode.feature(icname).set('filename', pathtosectionwise);
+%     geonode.feature(icname).set('struct', 'sectionwise');
+%     geonode.feature(icname).set('rtol', 0.001);    
+% else
+%     disp('Reusing selection. Modifying sectionwise file path and rebuilding.')
+%     geonode.feature(icname).set('filename',pathtosectionwise);
+% end
 
 geonode.run;
 geonode.run('fin');
