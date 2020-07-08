@@ -9,15 +9,15 @@ function data = extractScalarPotentials(model, selection, facecount, evalfunc)
 % ARR 2020.02.28
 
 if ~exist('facecount','var') || isempty(facecount)
-  facecount=6;
+  facecount=1:6;
 end
 
 if ~exist('evalfunc','var') || isempty(evalfunc)
-  evalfunc = 'Vm2-Vm';
+  evalfunc = 'Vm2+Vm';
 end
 
 data = {};
-for i = 1:facecount
+for i = facecount
     rawData = mpheval(model, evalfunc, 'Selection',[selection num2str(i)]);
     data{end+1} = rawData.p;
     data{end} = [data{end}; rawData.d1]';
