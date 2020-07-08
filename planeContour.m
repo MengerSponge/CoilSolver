@@ -1,4 +1,4 @@
-function facedata = planeContour(model, selection,facecount, inside, nlevels,verbose,showy,debug)
+function facedata = planeContour(model, selection,facecount, inside, nlevels,verbose,showy,debug,evalfunc)
 % facedata = planeContour(model, selection,facecount, inside, nlevels,verbose,showy,debug)
 % 
 % Many of these parameters are optional. This method takes a model with specified planar faces,
@@ -8,7 +8,7 @@ function facedata = planeContour(model, selection,facecount, inside, nlevels,ver
 % ARR 2020.03.10
 
 if ~exist('facecount','var') || isempty(facecount)
-  facecount=6;
+  facecount=1:6;
 end
 
 if ~exist('nlevels','var') || isempty(nlevels)
@@ -25,6 +25,10 @@ end
 
 if ~exist('debug','var') || isempty(debug)
   debug=false;
+end
+
+if ~exist('evalfunc','var') || isempty(evalfunc)
+  evalfunc='Vm+Vm2';
 end
 
 %{

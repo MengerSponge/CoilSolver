@@ -1,7 +1,7 @@
-function energizeContours(mfmodel,selname,current,coilindex)
+function energizeContours(model,selname,current,coilindex)
 
 if ~exist('selname','var') || isempty(selname)
-  selname = 'windings';
+  selname = 'csel1';
 end
 
 if ~exist('current','var') || isempty(current)
@@ -13,6 +13,8 @@ if ~exist('coilindex','var') || isempty(coilindex)
 end
 
 coilname = ['edc' num2str(coilindex)];
+
+mfmodel = model.component('comp1').physics('mf');
 
 nodes = mfmodel.feature.tags;
 

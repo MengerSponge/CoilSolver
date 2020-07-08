@@ -15,6 +15,8 @@ if ~exist('selname','var') || isempty(selname)
     selname = 'windings';
 end
 
+model.param.set('mode', '1', '0: mfnc. excitation 1: mf coils');
+
 geonode = model.component('comp1').geom('geom1');
 
 
@@ -34,6 +36,10 @@ while searching
 end
 
 faces = length(facedata);
+
+bundlename = 'windings';
+selflag = true;
+
 for i=1:faces
     M = facedata{i}{4};
     levels = length(facedata{i}{5});
@@ -41,7 +47,11 @@ for i=1:faces
         isowires = length(facedata{i}{5}{j});
         for k = 1:isowires
            contourdata = affineRestore(facedata{i}{5}{j}{k}(1,:),facedata{i}{5}{j}{k}(2,:),M);
-           insertWire(model,contourdata,'windings',wireN);
+           selfN = insertWire(model,contourdata,wireN,selflag);
+           selflag = false;
+           if selfN ~= wireN
+               warning("Winding numbers disagree")
+           end
            wireN = wireN + 1;
         end
     end
