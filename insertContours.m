@@ -15,7 +15,7 @@ if ~exist('selname','var') || isempty(selname)
     selname = 'windings';
 end
 
-model.param.set('mode', '1', '0: mfnc. excitation 1: mf coils');
+model.param.set('coil_shell', '2.3', 'Wires go at 2.4');
 
 geonode = model.component('comp1').geom('geom1');
 
