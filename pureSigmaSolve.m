@@ -5,10 +5,17 @@ Generates coils for each element of basis up to "order", calculates
 strength of interaction of resulting field on central region. Returns
 square matrix of couplings for each Sigma.
 %}
+
+import com.comsol.model.*
+import com.comsol.model.util.*
+
 tic
 %One time setup:
+ModelUtil.clear
 model = mphload(model_path);
 sourcecell = loadMagneticBasis(model,'Vm2', maxl, basisfunctions, bubble);
+
+ModelUtil.showProgress(true)
 
 couplings = zeros(length(sourcecell));
 t = toc;
@@ -44,11 +51,18 @@ for sigmai = 1:length(sourcecell)
     model.sol('sol2').runAll;
 
     % Extract tabular response data
-
+    model.result.numerical('int1').set('table','tbl2');
+    model.result.numerical('int1').setResult;
     intersection = mphtable(model,'tbl2');
+    intdata = intersection.data;
+    if length(intdata)~=length(sourcecell)
+        warning('about to have a bad time.')
+    end
     couplings(sigmai,:)=intersection.data;
-    save('sigmalmIntersection.mat',couplings);
+    save('sigmalmIntersection','couplings');
     disp(['Finished a loop in ' num2str(toc-t)])
+    sigmafile = [model_path(1:end-4) num2str(sigmai) '.mph'];
+    mphsave(model,sigmafile)
     end
 
     disp(['Full Basis took ' num2str(round(toc)) 'seconds'])
