@@ -1,6 +1,12 @@
 # CoilSolver
 Scalar potential based magnetic coil solver, in COMSOL and Matlab
 
+## Solve for Scalar Potential Couplings
+```matlab
+couplings = pureSigmaSolve('ScalarBasis-Simplified.mph',3,50,[],'/(0.7[m])^')
+```
+
+## Extract winding information from a model
 Because COMSOL MPH files are large binaries, I've included a far more compact Matlab function to generate and solve a new model.
 If you call it with the optional parameter set to `true`, it will simply build the model.
 The default behavior is to build and then solve the model, yielding an object that is useful for the other commands.
