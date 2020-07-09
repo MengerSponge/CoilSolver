@@ -28,7 +28,7 @@ if ~exist('debug','var') || isempty(debug)
 end
 
 if ~exist('evalfunc','var') || isempty(evalfunc)
-  evalfunc='Vm+Vm2';
+  evalfunc='Vm';
 end
 
 %{

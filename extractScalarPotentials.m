@@ -1,7 +1,7 @@
 function data = extractScalarPotentials(model, selection, facecount, evalfunc)
 % data = extractScalarPotentials(model, selection, facecount, evalfunc)
 %
-% Gets point information from model. Defaults to "Vm2-Vm", but this is
+% Gets point information from model. Defaults to "Vm", but this is
 % changeable with the optional parameter evalfunc. Returns cell array
 % (default 6 elements) of *only* coordinates and evaluated function on
 % those coordinates.
@@ -13,7 +13,7 @@ if ~exist('facecount','var') || isempty(facecount)
 end
 
 if ~exist('evalfunc','var') || isempty(evalfunc)
-  evalfunc = 'Vm2+Vm';
+  evalfunc = 'Vm';
 end
 
 data = {};
