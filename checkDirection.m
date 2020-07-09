@@ -8,7 +8,7 @@ function reverse = checkDirection(x, y, Vm, wirepath, wireVm, gradVmThreshold, v
 
 
 if ~exist('gradVmThreshold','var') || isempty(gradVmThreshold)
-  gradVmThreshold = .8;
+  gradVmThreshold = .5;
 end
 
 if ~exist('verbose','var') || isempty(verbose)
@@ -62,7 +62,7 @@ elseif directioncode>gradVmThreshold
     reverse = false;
 else
     reverse = false;
-    error('Vm directionality not clear. Need to improve stencil resolution?')
+    warning('Vm directionality not clear. Need to improve stencil resolution?')
 end
 
 end
@@ -72,20 +72,22 @@ function i = nearestmesh(A,B,x,y,d_min)
 % [xi,yi,Vmi] = nearestmesh(A,B,x,y,Vm)
 % finds closest point in x,y that is at least d_min away from line through
 % A-B.
+if norm(B-A)<2*eps
+    i=1;
+else
+    if ~exist('d_min','var') || isempty(d_min)
+      d_min = 1e-9;
+    end 
 
-if ~exist('d_min','var') || isempty(d_min)
-  d_min = 1e-9;
-end 
+    sumdsquared = (A(1)-x).^2+(A(2)-y).^2+(B(1)-x).^2+(B(2)-y).^2;
 
-sumdsquared = (A(1)-x).^2+(A(2)-y).^2+(B(1)-x).^2+(B(2)-y).^2;
+    abhat = (B-A)/norm(B-A);
+    Pperpd = (x-A(1))*abhat(2)-(y-A(2))*abhat(1);
 
-abhat = (B-A)/norm(B-A);
-Pperpd = (x-A(1))*abhat(2)-(y-A(2))*abhat(1);
+    mindee = min(sumdsquared(Pperpd>d_min));
 
-mindee = min(sumdsquared(Pperpd>d_min));
-
-i = find(sumdsquared==mindee);
-
+    i = find(sumdsquared==mindee);
+end
 end
 
 
