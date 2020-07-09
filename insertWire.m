@@ -45,11 +45,13 @@ end
 
 geonode.feature.create(['ic' num2str(wireN)], 'InterpolationCurve').set('source', 'table').set('table', contourdata').set('rtol', 0.001).set('type', 'open');
 
+if icN==1
 try
     geonode.selection.create('csel1', 'CumulativeSelection');
     varargout{2}='csel1';
 catch
     warning("Couldn't create cumulative selection 1.")
+end
 end
 try
     model.component('comp1').geom('geom1').selection('csel1').label(selname);

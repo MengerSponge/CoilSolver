@@ -1,4 +1,4 @@
-function loadMagneticBasis(model,Vm, maxl, basisfunctions, bubble)
+function sourcecell = loadMagneticBasis(model,Vm, maxl, basisfunctions, bubble)
 
 if ~exist('Vm','var') || isempty(Vm)
   Vm='Vm';
@@ -26,12 +26,14 @@ while ischar(tline)
 end
 fclose(fid);
 
+source = cell(0,1);
 basis = cell(0,1);
 emm = cell(0,1);
 for l = 1:maxl
     % wrap each harmonic in parens and multiply it by scalar potential
     % divide by r^l
     basis{l,1} = strcat(strcat('(',split(basisl{l}(2:end-1),', ')),[')*' Vm bubble num2str(l)]);
+    source{l,1} = split(basisl{l}(2:end-1),', ');
     emstring = cell(1,2*l+1);
     for m = 1:2*l+1
         emstring{m} = ['l=' num2str(l) ' m=' num2str(m-l-1)];
@@ -42,6 +44,7 @@ end
 % Flatten basis*Vm cell array and l,m label cell array
 exprcell = vertcat(basis{:});
 emmcell = vertcat(emm{:});
+sourcecell = vertcat(source{:});
 
 % model.result.numerical.create('int1', 'IntSurface');
 % model.result.numerical('int1').selection.named('geom1_csel1_bnd');
