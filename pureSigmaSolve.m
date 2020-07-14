@@ -9,6 +9,7 @@ square matrix of couplings for each Sigma.
 import com.comsol.model.*
 import com.comsol.model.util.*
 
+
 tic
 %One time setup:
 ModelUtil.clear
@@ -18,8 +19,11 @@ sourcecell = loadMagneticBasis(model,'Vm2', maxl, basisfunctions, bubble);
 ModelUtil.showProgress(true)
 
 couplings = zeros(length(sourcecell));
+cleanupWires(model,'pol')
+cleanupWires(model,'ic')
+
 t = toc;
-disp(['Setup took: ' num2str(round(t)) 's'])
+disp(['Setup took ' num2str(round(t)) ' s'])
 
 for sigmai = 1:length(sourcecell)
     t=toc;
@@ -38,17 +42,45 @@ for sigmai = 1:length(sourcecell)
         model.component('comp1').probe(['bnd' num2str(i)]).set('expr', sourcecell{sigmai});
     end
 
-    %
-    model.sol('sol1').runAll;
-
+    try
+        model.component('comp1').mesh('mesh1').run;
+    catch
+        disp('MFNC meshing failed. Try to fix before continuing!')
+        mphlaunch
+        pause;
+    end
+    
+    try
+        model.sol('sol1').runAll;
+    catch
+        disp('MFNC solve failed. Try to fix before continuing!')
+        mphlaunch
+        pause;
+    end
     disp(['Working on Vm_' num2str(sigmai) ' = ' sourcecell{sigmai} ' wires'])
     facedata = planeContour(model,'sel',2:7,[0,0,0],resolution,false,false,false,'Vm');
 
     % Add new wires and (same) MF interface.
     insertContours(model,facedata)
     energizeContours(model,'csel1',1,1)
-
-    model.sol('sol2').runAll;
+    
+    model.param.set('coil_shell', '2.3', 'Mumetal is 2.5, so this is *inside*');
+    model.component('comp1').geom('geom1').run;
+    try
+        model.component('comp1').mesh('mesh2').run;
+    catch
+        disp('MF meshing failed. Try to fix before continuing!')
+        mphlaunch
+        pause;
+    end
+    
+    try
+        model.sol('sol2').runAll;
+    catch
+        disp('MF solve failed. Try to fix before continuing!')
+        mphlaunch
+        pause;
+    end
 
     % Extract tabular response data
     model.result.numerical('int1').set('table','tbl2');
@@ -63,7 +95,6 @@ for sigmai = 1:length(sourcecell)
     disp(['Finished a loop in ' num2str(toc-t)])
     sigmafile = [model_path(1:end-4) num2str(sigmai) '.mph'];
     mphsave(model,sigmafile)
-    end
-
+end
     disp(['Full Basis took ' num2str(round(toc)) 'seconds'])
 end
