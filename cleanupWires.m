@@ -1,4 +1,8 @@
-function cleanupWires(model)
+function cleanupWires(model,linetype)
+
+if ~exist('linetype','var') || isempty(linetype)
+    linetype = 'pol';
+end
 
 searching=true;
 wireN = 1;
@@ -6,8 +10,8 @@ geonode = model.component('comp1').geom('geom1');
 objectlabels = char(geonode.feature.tags);
 
 while searching
-   if any(ismember(objectlabels,['ic' num2str(wireN)],'rows'))
-       geonode.feature.remove(['ic' num2str(wireN)]);
+   if any(ismember(objectlabels,[linetype num2str(wireN)],'rows'))
+       geonode.feature.remove([linetype num2str(wireN)]);
        wireN = wireN + 1;
    else
        searching = false;

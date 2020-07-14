@@ -33,7 +33,7 @@ wireN = icN;
 varargout{1} = icN;
 
 while searching
-   if any(ismember(objectlabels,['ic' num2str(wireN)],'rows'))
+   if any(ismember(objectlabels,['pol' num2str(wireN)],'rows'))
        wireN = wireN + 1;
    else
        searching = false;
@@ -43,9 +43,10 @@ end
 % Now add new wire
 % check to see if selection group exists yet
 
-geonode.feature.create(['ic' num2str(wireN)], 'InterpolationCurve').set('source', 'table').set('table', contourdata').set('rtol', 0.001).set('type', 'open');
+% geonode.feature.create(['ic' num2str(wireN)], 'InterpolationCurve').set('source', 'table').set('table', contourdata').set('rtol', 0.0004).set('type', 'open');
+geonode.feature.create(['pol' num2str(wireN)], 'Polygon').set('source', 'table').set('table', contourdata');
 
-if icN==1
+if newsel
 try
     geonode.selection.create('csel1', 'CumulativeSelection');
     varargout{2}='csel1';

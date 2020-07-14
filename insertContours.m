@@ -1,4 +1,4 @@
-function insertContours(model,facedata,selname)
+function insertContours(model,facedata,selname, selflag)
 % function insertContours(model,facedata)
 % 
 % Takes contours contained in 'facedata' and inserts them with insertWire()
@@ -15,6 +15,10 @@ if ~exist('selname','var') || isempty(selname)
     selname = 'windings';
 end
 
+if ~exist('selflag','var') || isempty(selflag)
+    selflag = false;
+end
+
 model.param.set('coil_shell', '2.3', 'Wires go at 2.4');
 
 geonode = model.component('comp1').geom('geom1');
@@ -28,7 +32,7 @@ searching=true;
 wireN = 1;
 
 while searching
-   if any(ismember(objectlabels,['ic' num2str(wireN)],'rows'))
+   if any(ismember(objectlabels,['pol' num2str(wireN)],'rows'))
        wireN = wireN + 1;
    else
        searching = false;
@@ -36,9 +40,6 @@ while searching
 end
 
 faces = length(facedata);
-
-bundlename = 'windings';
-selflag = true;
 
 for i=1:faces
     M = facedata{i}{4};
