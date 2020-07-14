@@ -65,5 +65,6 @@ end
 %     varargout{3} = [];
 % end
 
-geonode.feature(['ic' num2str(wireN)]).set('contributeto', 'csel1');
+% geonode.feature(['ic' num2str(wireN)]).set('contributeto', 'csel1');
+geonode.feature(['pol' num2str(wireN)]).set('contributeto', 'csel1');
 end
