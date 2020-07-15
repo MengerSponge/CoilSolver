@@ -59,9 +59,11 @@ for sigmai = 1:length(sourcecell)
     end
     disp(['Working on Vm_' num2str(sigmai) ' = ' sourcecell{sigmai} ' wires'])
     facedata = planeContour(model,'sel',2:7,[0,0,0],resolution,false,false,false,'Vm');
-
+    
+    % Resample facedata
+    newfacedata = resampleContours(facedata,0.007,'spline');
     % Add new wires and (same) MF interface.
-    insertContours(model,facedata)
+    insertContours(model,newfacedata)
     energizeContours(model,'csel1',1,1)
     
     model.param.set('coil_shell', '2.3', 'Mumetal is 2.5, so this is *inside*');
