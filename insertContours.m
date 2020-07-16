@@ -1,4 +1,4 @@
-function insertContours(model,facedata,selname, selflag)
+function insertContours(model,facedata,selname, selflag, linetype)
 % function insertContours(model,facedata)
 % 
 % Takes contours contained in 'facedata' and inserts them with insertWire()
@@ -19,6 +19,10 @@ if ~exist('selflag','var') || isempty(selflag)
     selflag = false;
 end
 
+if ~exist('linetype','var') || isempty(linetype)
+  linetype='ic';
+end
+
 model.param.set('coil_shell', '2.3', 'Wires go at 2.4');
 
 geonode = model.component('comp1').geom('geom1');
@@ -32,7 +36,7 @@ searching=true;
 wireN = 1;
 
 while searching
-   if any(ismember(objectlabels,['pol' num2str(wireN)],'rows'))
+   if any(ismember(objectlabels,[linetype num2str(wireN)],'rows'))
        wireN = wireN + 1;
    else
        searching = false;
@@ -48,7 +52,7 @@ for i=1:faces
         isowires = length(facedata{i}{5}{j});
         for k = 1:isowires
            contourdata = affineRestore(facedata{i}{5}{j}{k}(1,:),facedata{i}{5}{j}{k}(2,:),M);
-           selfN = insertWire(model,contourdata,wireN,selflag);
+           selfN = insertWire(model, contourdata, wireN, selflag, linetype);
            selflag = false;
            if selfN ~= wireN
                warning("Winding numbers disagree")

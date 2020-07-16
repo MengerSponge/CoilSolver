@@ -17,8 +17,8 @@ while searching
        searching = false;
    end
 end
-model.component('comp1').geom('geom1').run;
-try
-model.component('comp1').physics('mf').feature.remove('edc1');
-end
+% model.component('comp1').geom('geom1').run;
+% try
+% model.component('comp1').physics('mf').feature.remove('edc1');
+% end
 end

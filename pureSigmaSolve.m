@@ -12,11 +12,11 @@ import com.comsol.model.util.*
 
 tic
 %One time setup:
-ModelUtil.clear
+ModelUtil.clear;
 model = mphload(model_path);
 sourcecell = loadMagneticBasis(model,'Vm2', maxl, basisfunctions, bubble);
 
-ModelUtil.showProgress(true)
+ModelUtil.showProgress(true);
 
 couplings = zeros(length(sourcecell));
 cleanupWires(model,'pol')
@@ -32,9 +32,9 @@ for sigmai = 1:length(sourcecell)
 
     disp(['Working on Vm_' num2str(sigmai) ' = ' sourcecell{sigmai}])  
 
-    cleanupWires(model)
+    cleanupWires(model,'ic')
     model.param.set('coil_shell', '2.4', 'Mumetal is 2.5, so this is *inside*');
-    model.component('comp1').geom('geom1').run;
+    model.component('comp1').geom('geom1').run('fin');
 
     % assign source Vm and constant patches
     model.component('comp1').physics('mfnc').feature('msp1').set('Vm0', sourcecell{sigmai});
@@ -58,17 +58,20 @@ for sigmai = 1:length(sourcecell)
         pause;
     end
     disp(['Working on Vm_' num2str(sigmai) ' = ' sourcecell{sigmai} ' wires'])
-    facedata = planeContour(model,'sel',2:7,[0,0,0],resolution,false,false,false,'Vm');
+    facedata = planeContour(model,2:7,[0,0,0],resolution,false,false,false,'Vm');
     
     % Resample facedata
-    newfacedata = resampleContours(facedata,0.007,'spline');
+    disp('Resampling wires')
+    newfacedata = resampleContours(facedata,0.009,'spline');
     % Add new wires and (same) MF interface.
+    disp('Adding wires to model')
     insertContours(model,newfacedata)
     energizeContours(model,'csel1',1,1)
     
     model.param.set('coil_shell', '2.3', 'Mumetal is 2.5, so this is *inside*');
-    model.component('comp1').geom('geom1').run;
+    model.component('comp1').geom('geom1').run('fin');
     try
+        disp('Meshing MF model')
         model.component('comp1').mesh('mesh2').run;
     catch
         disp('MF meshing failed. Try to fix before continuing!')
@@ -77,6 +80,7 @@ for sigmai = 1:length(sourcecell)
     end
     
     try
+        disp('Solving MF model')
         model.sol('sol2').runAll;
     catch
         disp('MF solve failed. Try to fix before continuing!')

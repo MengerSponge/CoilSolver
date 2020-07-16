@@ -1,4 +1,4 @@
-function varargout = insertWire(model, contourdata, icN, newsel)
+function varargout = insertWire(model, contourdata, icN, newsel, linetype)
 % function insertWires(model, wiredata, tag)
 % 
 % Adds wires contained in wiredata to model, identified with 'tag'. If user
@@ -10,7 +10,6 @@ if ~exist('newsel','var') || isempty(newsel)
   newsel=true;
 end
 
-
 if ~exist('selname','var') || isempty(selname)
   selname='windings';
 end
@@ -20,6 +19,10 @@ if ~exist('icN','var') || isempty(icN)
   searching=true;
 else
   searching=false;
+end
+
+if ~exist('linetype','var') || isempty(linetype)
+  linetype='ic';
 end
 
 % First identify wires in model and find an adjacent index.
@@ -33,7 +36,7 @@ wireN = icN;
 varargout{1} = icN;
 
 while searching
-   if any(ismember(objectlabels,['pol' num2str(wireN)],'rows'))
+   if any(ismember(objectlabels,[linetype num2str(wireN)],'rows'))
        wireN = wireN + 1;
    else
        searching = false;
@@ -43,9 +46,12 @@ end
 % Now add new wire
 % check to see if selection group exists yet
 
-% geonode.feature.create(['ic' num2str(wireN)], 'InterpolationCurve').set('source', 'table').set('table', contourdata').set('rtol', 0.0004).set('type', 'open');
-geonode.feature.create(['pol' num2str(wireN)], 'Polygon').set('source', 'table').set('table', contourdata');
-
+if strcmp(linetype,'ic')
+    geonode.feature.create(['ic' num2str(wireN)], 'InterpolationCurve').set('source', 'table').set('table', contourdata').set('rtol', 0.0004).set('type', 'open');
+else
+    geonode.feature.create(['pol' num2str(wireN)], 'Polygon').set('source', 'table').set('table', contourdata');
+end
+    
 if newsel
 try
     geonode.selection.create('csel1', 'CumulativeSelection');
@@ -65,6 +71,9 @@ end
 %     varargout{3} = [];
 % end
 
-% geonode.feature(['ic' num2str(wireN)]).set('contributeto', 'csel1');
-geonode.feature(['pol' num2str(wireN)]).set('contributeto', 'csel1');
+if strcmp(linetype,'ic')
+    geonode.feature(['ic' num2str(wireN)]).set('contributeto', 'csel1');
+else
+    geonode.feature(['pol' num2str(wireN)]).set('contributeto', 'csel1');
+end
 end

@@ -37,30 +37,44 @@ function newcontour = resample(contour, spacing, mode)
 x = contour(1,:);
 y = contour(2,:);
 
+% Eliminate points that are within 1e-5 of each other.
+dx = [diff(x) 1];
+dy = [diff(y) 1];
+
+dr = dx.^2+dy.^2;
+x(dr<1e-10)=[];
+y(dr<1e-10)=[];
+
 % first try
 n = 15;
 
-pt = interparc(n,x,y,mode);
-dpt = diff(pt);
-ell = sqrt(mean(sum(dpt.^2,2)));
-err = ell/spacing;
-
-itercount = 5;
-refining = true;
-while refining
-    itercount = itercount - 1;
-    if itercount>0
-        n = round(n*err);
-        pt = interparc(n,x,y,mode);
-        dpt = diff(pt);
-        ell = sqrt(mean(sum(dpt.^2,2)));
-        err = abs(spacing-ell)/spacing;
-    else
-        refining = false;
+if length(x)<3
+    greenflag=false;
+    newcontour = [x;y];
+else
+    
+    pt = interparc(n,x,y,mode);
+    dpt = diff(pt);
+    ell = sqrt(mean(sum(dpt.^2,2)));
+    err = ell/spacing;
+    
+    itercount = 5;
+    refining = true;
+    while refining
+        itercount = itercount - 1;
+        if itercount>0
+            n = round(n*err);
+            pt = interparc(n,x,y,mode);
+            dpt = diff(pt);
+            ell = sqrt(mean(sum(dpt.^2,2)));
+            err = abs(spacing-ell)/spacing;
+        else
+            refining = false;
+        end
+        if err<0.1
+            refining = false;
+        end
     end
-    if err<0.1
-        refining = false;
-    end
+    newcontour = pt';
 end
-newcontour = pt';
 end

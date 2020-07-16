@@ -1,5 +1,5 @@
-function facedata = planeContour(model, selection,facecount, inside, nlevels,verbose,showy,debug,evalfunc)
-% facedata = planeContour(model, selection,facecount, inside, nlevels,verbose,showy,debug)
+function facedata = planeContour(model, facecount, inside, nlevels,verbose,showy,debug,evalfunc)
+% facedata = planeContour(model, facecount, inside, nlevels,verbose,showy,debug)
 % 
 % Many of these parameters are optional. This method takes a model with specified planar faces,
 % evaluates a prescribed function on those faces, then solves for the contours on those faces.
@@ -48,7 +48,7 @@ if gradient is backwards, flip curve
 
 if verbose, disp('Extracting scalar potentials'), end
 
-data = extractScalarPotentials(model, selection,facecount);
+data = extractScalarPotentials(model, facecount);
 
 
 %Calculate global range of scalar potential on all imported surfaces

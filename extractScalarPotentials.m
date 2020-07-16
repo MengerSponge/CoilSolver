@@ -1,4 +1,4 @@
-function data = extractScalarPotentials(model, selection, facecount, evalfunc)
+function data = extractScalarPotentials(model, facecount, evalfunc)
 % data = extractScalarPotentials(model, selection, facecount, evalfunc)
 %
 % Gets point information from model. Defaults to "Vm", but this is
@@ -18,7 +18,7 @@ end
 
 data = {};
 for i = facecount
-    rawData = mpheval(model, evalfunc, 'Selection',[selection num2str(i)]);
+    rawData = mpheval(model, evalfunc, 'Selection',['sel' num2str(i)]);
     data{end+1} = rawData.p;
     data{end} = [data{end}; rawData.d1]';
     data{end}(any(isnan(data{end}), 2), :) = [];
