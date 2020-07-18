@@ -11,7 +11,7 @@ if ~exist('facedata','var') || isempty(facedata)
 end
 
 if ~exist('selname','var') || isempty(selname)
-    disp('No selection set specified. Assigning wires to "windings"')
+%     disp('No selection set specified. Assigning wires to "windings"')
     selname = 'windings';
 end
 

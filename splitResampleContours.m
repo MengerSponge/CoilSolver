@@ -8,9 +8,7 @@ assert(length(spacing)==2, "Need coarse and fine spacing parameters")
 newfacedata = facedata;
 
 for i=1:length(facedata)
-    if i==5
-        disp('check me')
-    end
+    disp(['Resampling face ' num2str(i)])
     % Split hole data for face i
     n_holes = length(holedata{i});
     hole_coord = zeros(2,n_holes);

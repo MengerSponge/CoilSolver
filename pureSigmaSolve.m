@@ -31,66 +31,31 @@ for sigmai = 1:length(sourcecell)
     t=toc;
     % remove all the edge currents and their associated MF interface, add new
     % wires and (same) MF interface.
-
-    disp(['Working on Vm_' num2str(sigmai) ' = ' sourcecell{sigmai}])  
-
-    cleanupWires(model,'ic')
-    model.param.set('coil_shell', '2.4', 'Mumetal is 2.5, so this is *inside*');
-    model.component('comp1').geom('geom1').run('fin');
-
-    % assign source Vm and constant patches
-    model.component('comp1').physics('mfnc').feature('msp1').set('Vm0', sourcecell{sigmai});
-    for i = 1:12
-        model.component('comp1').probe(['bnd' num2str(i)]).set('expr', sourcecell{sigmai});
-    end
-
-    try
-        model.component('comp1').mesh('mesh1').run;
-    catch
-        disp('MFNC meshing failed. Try to fix before continuing!')
-        mphlaunch
-        pause;
-    end
     
-    try
-        model.sol('sol1').runAll;
-    catch
-        disp('MFNC solve failed. Try to fix before continuing!')
-        mphlaunch
-        pause;
-    end
+    disp(['Working on Vm_' num2str(sigmai) ' = ' sourcecell{sigmai}])
+    
+    cleanupWires(model,'ic')
+    
+    shiftCoilShell('2.4')
+    loadScalarPotential(model, sourcecell{sigmai}, 12);
+    
+    meshThenSolve(1)
+    
     disp(['Working on Vm_' num2str(sigmai) ' = ' sourcecell{sigmai} ' wires'])
     facedata = planeContour(model,2:7,[0,0,0],resolution,false,false,false,'Vm');
     
     % Resample facedata
     disp('Resampling wires')
     newfacedata = splitResampleContours(facedata, holedata, [0.012,0.001], 'spline');
-%     newfacedata = resampleContours(facedata,0.009,'spline');
+    %     newfacedata = resampleContours(facedata,0.009,'spline');
     % Add new wires and (same) MF interface.
     disp('Adding wires to model')
     insertContours(model,newfacedata)
     energizeContours(model,'csel1',1,1)
     
-    model.param.set('coil_shell', '2.3', 'Mumetal is 2.5, so this is *inside*');
-    model.component('comp1').geom('geom1').run('fin');
-    try
-        disp('Meshing MF model')
-        model.component('comp1').mesh('mesh2').run;
-    catch
-        disp('MF meshing failed. Try to fix before continuing!')
-        mphlaunch
-        pause;
-    end
+    shiftCoilShell('2.3')
+    meshThenSolve(2)
     
-    try
-        disp('Solving MF model')
-        model.sol('sol2').runAll;
-    catch
-        disp('MF solve failed. Try to fix before continuing!')
-        mphlaunch
-        pause;
-    end
-
     % Extract tabular response data
     model.result.numerical('int1').set('table','tbl2');
     model.result.numerical('int1').setResult;
@@ -105,5 +70,36 @@ for sigmai = 1:length(sourcecell)
     sigmafile = [model_path(1:end-4) num2str(sigmai) '.mph'];
     mphsave(model,sigmafile)
 end
-    disp(['Full Basis took ' num2str(round(toc)) 'seconds'])
+disp(['Full Basis took ' num2str(round(toc)) 'seconds'])
+end
+
+function shiftCoilShell(ell)
+model.param.set('coil_shell', ell, 'Mumetal is 2.5, so this is *inside*');
+model.component('comp1').geom('geom1').run('fin');
+end
+
+function meshThenSolve(index)
+if index==1
+    physics = 'MFNC';
+else
+    physics = 'MF';
+end
+
+try
+    disp(['Meshing ' physics ' model'])
+    model.component('comp1').mesh(['mesh' num2str(index)]).run;
+catch
+    disp([physics ' meshing failed. Try to fix before continuing!'])
+    mphlaunch
+    disp('Continuing...')
+end
+
+try
+    disp(['Solving ' physics ' model'])
+    model.sol(['sol' num2str(index)]).runAll;
+catch
+    disp([physics ' solve failed. Try to fix before continuing!'])
+    mphlaunch
+    disp('Continuing...')
+end
 end
