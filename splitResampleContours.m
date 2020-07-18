@@ -75,9 +75,9 @@ for i=1:length(facedata)
                         split{1} = resample(supercontour(:,1:steps(1)),spacing(1),mode);
                         for l=1:(Nwire-2)
                             if supercontour(steps(l+1))==1
-                                split{l+1}=supercontour(:,(steps(l)+1):steps(l+1));
+                                split{l+1}=supercontour(:,steps(l):steps(l+1));
                             else
-                                split{l+1}=resample(supercontour(:,(steps(l)+1):steps(l+1)),spacing(1),mode);
+                                split{l+1}=resample(supercontour(:,steps(l):steps(l+1)),spacing(1),mode);
                             end
                         end
                         split{Nwire} = resample(supercontour(:,(steps(end)+1):end),spacing(1),mode);
