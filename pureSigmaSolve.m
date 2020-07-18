@@ -36,10 +36,10 @@ for sigmai = 1:length(sourcecell)
     
     cleanupWires(model,'ic')
     
-    shiftCoilShell('2.4')
+    shiftCoilShell(model, '2.4')
     loadScalarPotential(model, sourcecell{sigmai}, 12);
     
-    meshThenSolve(1)
+    meshThenSolve(model, 1)
     
     disp(['Working on Vm_' num2str(sigmai) ' = ' sourcecell{sigmai} ' wires'])
     facedata = planeContour(model,2:7,[0,0,0],resolution,false,false,false,'Vm');
@@ -50,11 +50,12 @@ for sigmai = 1:length(sourcecell)
     %     newfacedata = resampleContours(facedata,0.009,'spline');
     % Add new wires and (same) MF interface.
     disp('Adding wires to model')
-    insertContours(model,newfacedata)
+    insertContours(model, newfacedata)
+    shiftCoilShell(model, '2.3')
+    
     energizeContours(model,'csel1',1,1)
     
-    shiftCoilShell('2.3')
-    meshThenSolve(2)
+    meshThenSolve(model, 2)
     
     % Extract tabular response data
     model.result.numerical('int1').set('table','tbl2');
@@ -73,12 +74,12 @@ end
 disp(['Full Basis took ' num2str(round(toc)) 'seconds'])
 end
 
-function shiftCoilShell(ell)
+function shiftCoilShell(model, ell)
 model.param.set('coil_shell', ell, 'Mumetal is 2.5, so this is *inside*');
 model.component('comp1').geom('geom1').run('fin');
 end
 
-function meshThenSolve(index)
+function meshThenSolve(model, index)
 if index==1
     physics = 'MFNC';
 else

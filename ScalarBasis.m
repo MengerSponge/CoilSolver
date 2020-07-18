@@ -9,12 +9,12 @@ import com.comsol.model.util.*
 
 model = ModelUtil.create('Model');
 
-execpath = pwd;
 model.modelPath(pwd);
 
 model.label('ScalarBasis.mph');
 
 model.param.set('annulus_r', '.325');
+model.param.set('annulus_small_r','0.5');
 model.param.set('coil_shell', '2.4', 'Mumetal is 2.5, so this is *inside*');
 
 model.component.create('comp1', true);
@@ -61,7 +61,7 @@ model.component('comp1').geom('geom1').feature('wp1').geom.feature('c3').set('po
 model.component('comp1').geom('geom1').feature('wp1').geom.feature('c3').set('r', '.05');
 model.component('comp1').geom('geom1').feature('wp1').geom.create('c4', 'Circle');
 model.component('comp1').geom('geom1').feature('wp1').geom.feature('c4').set('pos', [1.05 1.05]);
-model.component('comp1').geom('geom1').feature('wp1').geom.feature('c4').set('r', '.05*(1+annulus_r)');
+model.component('comp1').geom('geom1').feature('wp1').geom.feature('c4').set('r', '.05*(1+annulus_small_r)');
 model.component('comp1').geom('geom1').feature('wp1').geom.create('rot2', 'Rotate');
 model.component('comp1').geom('geom1').feature('wp1').geom.feature('rot2').set('rot', 'range(0,90,359)');
 model.component('comp1').geom('geom1').feature('wp1').geom.feature('rot2').selection('input').set({'c3' 'c4'});

@@ -1,4 +1,4 @@
-function couplings = singleSigmaSolve(model_path, Vm, resolution, basisfunctions, bubble)
+function couplings = singleSigmaSolve(Vm, resolution, basisfunctions, bubble)
 % couplings = singleSigmaSolve(model, order, basis)
 %{
 Generates coils for a single element of basis, calculates strength of
@@ -15,7 +15,7 @@ import com.comsol.model.util.*
 tic
 %One time setup:
 ModelUtil.clear;
-model = mphload(model_path);
+model = ScalarBasis;
 sourcecell = loadMagneticBasis(model,'Vm2', 10, basisfunctions, bubble);
 
 ModelUtil.showProgress(true);
@@ -31,16 +31,16 @@ disp(['Setup took ' num2str(round(t)) ' s'])
 % remove all the edge currents and their associated MF interface, add new
 % wires and (same) MF interface.
 
-disp(['Working on Vm_' num2str(sigmai) ' = ' Vm])
+disp(['Working on Vm = ' Vm])
 
 cleanupWires(model,'ic')
 
-shiftCoilShell('2.4')
+shiftCoilShell(model, '2.4')
 loadScalarPotential(model, Vm, 12);
 
-meshThenSolve(1)
+meshThenSolve(model, 1)
 
-disp(['Working on Vm_' num2str(sigmai) ' = ' Vm ' wires'])
+disp(['Working on Vm = ' Vm ' wires'])
 facedata = planeContour(model,2:7,[0,0,0],resolution,false,false,false,'Vm');
 
 % Resample facedata
@@ -50,10 +50,11 @@ newfacedata = splitResampleContours(facedata, holedata, [0.012,0.001], 'spline')
 % Add new wires and (same) MF interface.
 disp('Adding wires to model')
 insertContours(model,newfacedata)
+shiftCoilShell(model, '2.3')
+
 energizeContours(model,'csel1',1,1)
 
-shiftCoilShell('2.3')
-meshThenSolve(2)
+meshThenSolve(model, 2)
 
 % Extract tabular response data
 model.result.numerical('int1').set('table','tbl2');
@@ -65,19 +66,18 @@ if length(intdata)~=length(sourcecell)
 end
 couplings = intersection.data;
 save('sigmalmIntersection','couplings');
-
-sigmafile = [model_path(1:end-4) 'VmDirect.mph'];
+sigmafile = 'ScalarBasisVmDirect.mph';
 mphsave(model,sigmafile)
 
 disp([Vm ' took ' num2str(round(toc)) 'seconds'])
 end
 
-function shiftCoilShell(ell)
+function shiftCoilShell(model, ell)
 model.param.set('coil_shell', ell, 'Mumetal is 2.5, so this is *inside*');
 model.component('comp1').geom('geom1').run('fin');
 end
 
-function meshThenSolve(index)
+function meshThenSolve(model, index)
 if index==1
     physics = 'MFNC';
 else

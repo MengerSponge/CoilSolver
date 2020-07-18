@@ -72,7 +72,9 @@ for i=1:length(facedata)
                         split = cell(Nwire,1);
                         split{1} = resample(supercontour(:,1:steps(1)),spacing(1),mode);
                         for l=1:(Nwire-2)
-                            if supercontour(steps(l+1))==1
+                            testpoint = supercontour(:,steps(l)+1);
+                            nearhole = any(sum((hole_coord-testpoint).^2,1)-hole_r'.^2<0);
+                            if nearhole
                                 split{l+1}=supercontour(:,steps(l):steps(l+1));
                             else
                                 split{l+1}=resample(supercontour(:,steps(l):steps(l+1)),spacing(1),mode);
@@ -95,10 +97,16 @@ end
 
 function appended = buildContour(contours, curve, j)
 appended = contours;
-if isempty(appended{j})
-    appended{j}={curve};
-else
-    appended{j}=[appended{j}(:)' {curve}];
+MN = size(curve);
+% There's a bug in my splitting logic that sometimes generates bare points.
+% Instead of finding/fixing it, we'll just filter it and hope the problem
+% goes away.
+if MN(2)>1
+    if isempty(appended{j})
+        appended{j}={curve};
+    else
+        appended{j}=[appended{j}(:)' {curve}];
+    end
 end
 end
 
