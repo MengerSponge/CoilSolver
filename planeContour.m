@@ -133,7 +133,6 @@ for i = 1:length(data)
                         contours{j}={temppath};
                     else
                         contours{j}=[contours{j}(:)' {temppath}];
-
                     end
                 end
             end

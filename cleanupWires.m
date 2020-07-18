@@ -1,7 +1,7 @@
 function cleanupWires(model,linetype)
 
 if ~exist('linetype','var') || isempty(linetype)
-    linetype = 'pol';
+    linetype = 'ic';
 end
 
 searching=true;

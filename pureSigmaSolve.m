@@ -22,6 +22,8 @@ couplings = zeros(length(sourcecell));
 cleanupWires(model,'pol')
 cleanupWires(model,'ic')
 
+holedata = holeStructure;
+
 t = toc;
 disp(['Setup took ' num2str(round(t)) ' s'])
 
@@ -62,7 +64,8 @@ for sigmai = 1:length(sourcecell)
     
     % Resample facedata
     disp('Resampling wires')
-    newfacedata = resampleContours(facedata,0.009,'spline');
+    newfacedata = splitResampleContours(facedata, holedata, [0.012,0.001], 'spline');
+%     newfacedata = resampleContours(facedata,0.009,'spline');
     % Add new wires and (same) MF interface.
     disp('Adding wires to model')
     insertContours(model,newfacedata)

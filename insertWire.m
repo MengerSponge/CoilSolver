@@ -47,7 +47,7 @@ end
 % check to see if selection group exists yet
 
 if strcmp(linetype,'ic')
-    geonode.feature.create(['ic' num2str(wireN)], 'InterpolationCurve').set('source', 'table').set('table', contourdata').set('rtol', 0.0004).set('type', 'open');
+    geonode.feature.create(['ic' num2str(wireN)], 'InterpolationCurve').set('source', 'table').set('table', contourdata').set('rtol', 0).set('type', 'open');
 else
     geonode.feature.create(['pol' num2str(wireN)], 'Polygon').set('source', 'table').set('table', contourdata');
 end
