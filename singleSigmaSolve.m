@@ -1,4 +1,4 @@
-function couplings = singleSigmaSolve(Vm, resolution, basisfunctions, bubble)
+function couplings = singleSigmaSolve(Vm, resolution, basisfunctions, bubble, maxl)
 % couplings = singleSigmaSolve(model, order, basis)
 %{
 Generates coils for a single element of basis, calculates strength of
@@ -11,12 +11,15 @@ Austin Reid 2020.07.18
 import com.comsol.model.*
 import com.comsol.model.util.*
 
+if ~exist('maxl','var') || isempty(maxl)
+  maxl=10;
+end
 
 tic
 %One time setup:
 ModelUtil.clear;
 model = ScalarBasis;
-sourcecell = loadMagneticBasis(model,'Vm2', 10, basisfunctions, bubble);
+sourcecell = loadMagneticBasis(model,'Vm2', maxl, basisfunctions, bubble);
 
 ModelUtil.showProgress(true);
 
