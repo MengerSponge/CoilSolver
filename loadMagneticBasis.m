@@ -61,6 +61,7 @@ sourcecell = vertcat(source{:});
 % model.result.numerical('int1').set('probetag', 'none');
 
 % model.result.numerical('int1').set('table', 'tbl1');
+
 model.result.numerical('int1').set('expr',exprcell');
 model.result.numerical('int1').set('descr', emmcell');
 model.result.numerical('int1').setResult;

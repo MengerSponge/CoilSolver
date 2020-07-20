@@ -1,10 +1,14 @@
-function couplings = pureSigmaSolve(model_path, maxl, resolution, basisfunctions, bubble)
+function couplings = pureSigmaSolve(model_path, maxl, resolution, basisfunctions, bubble, firstsigmai)
 % couplings = pureSigmaSolve(model, order, basis)
 %{
 Generates coils for each element of basis up to "order", calculates
 strength of interaction of resulting field on central region. Returns
 square matrix of couplings for each Sigma.
 %}
+
+if ~exist('firstsigmai','var') || isempty(firstsigmai)
+  firstsigmai=1;
+end
 
 import com.comsol.model.*
 import com.comsol.model.util.*
@@ -13,7 +17,7 @@ import com.comsol.model.util.*
 tic
 %One time setup:
 ModelUtil.clear;
-model = mphload(model_path);
+model = ScalarBasis;
 sourcecell = loadMagneticBasis(model,'Vm2', maxl, basisfunctions, bubble);
 
 ModelUtil.showProgress(true);
@@ -27,7 +31,7 @@ holedata = holeStructure;
 t = toc;
 disp(['Setup took ' num2str(round(t)) ' s'])
 
-for sigmai = 1:length(sourcecell)
+for sigmai = firstsigmai:length(sourcecell)
     t=toc;
     % remove all the edge currents and their associated MF interface, add new
     % wires and (same) MF interface.
