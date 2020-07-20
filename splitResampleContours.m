@@ -39,7 +39,7 @@ for i=1:length(facedata)
                 for l=1:length(hole_r)
                     r = contour-hole_coord(:,l);
                     r2 = sum(r.*r,1);
-                    if any(r2<hole_r(l)^2)
+                    if any(r2<(hole_r(l)+0.01)^2)
                         curvemiss=false;
                     end
                 end
@@ -59,7 +59,7 @@ for i=1:length(facedata)
                         % them up, and the nonzero values are the parts
                         % that need to stay at the finer resolution. The
                         % zero values can be relaxed.
-                        wiretracker = wiretracker+(r2<hole_r(l)^2);
+                        wiretracker = wiretracker+(r2<(hole_r(l)+0.01)^2);
                     end
                     if max(wiretracker)==0
                         % Just missed penetration, I guess.
@@ -70,17 +70,21 @@ for i=1:length(facedata)
                         steps = find(diff(wiretracker)~=0);
                         Nwire = length(steps)+1;
                         split = cell(Nwire,1);
-                        split{1} = resample(supercontour(:,1:steps(1)),spacing(1),mode);
-                        for l=1:(Nwire-2)
-                            testpoint = supercontour(:,steps(l)+1);
-                            nearhole = any(sum((hole_coord-testpoint).^2,1)-hole_r'.^2<0);
-                            if nearhole
-                                split{l+1}=supercontour(:,steps(l):steps(l+1));
-                            else
-                                split{l+1}=resample(supercontour(:,steps(l):steps(l+1)),spacing(1),mode);
+                        if Nwire>1
+                            split{1} = resample(supercontour(:,1:steps(1)),spacing(1),mode);
+                            for l=1:(Nwire-2)
+                                testpoint = supercontour(:,steps(l)+1);
+                                nearhole = any(sum((hole_coord-testpoint).^2,1)-(hole_r'+0.01).^2<0);
+                                if nearhole
+                                    split{l+1}=supercontour(:,steps(l):steps(l+1));
+                                else
+                                    split{l+1}=resample(supercontour(:,steps(l):steps(l+1)),spacing(1),mode);
+                                end
                             end
+                            split{Nwire} = resample(supercontour(:,(steps(end)+1):end),spacing(1),mode);
+                        else
+                            split{1} = supercontour;
                         end
-                        split{Nwire} = resample(supercontour(:,(steps(end)+1):end),spacing(1),mode);
                         for l=1:Nwire
                             newcontours = buildContour(newcontours, split{l}, j);
                         end
