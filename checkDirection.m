@@ -70,23 +70,34 @@ end
 
 function i = nearestmesh(A,B,x,y,d_min)
 % [xi,yi,Vmi] = nearestmesh(A,B,x,y,Vm)
-% finds closest point in x,y that is at least d_min away from line through
-% A-B.
+% finds closest point in x,y that is at least d_min away from line through A-B.
 if norm(B-A)<2*eps
+    % If A and B are effectively the same point, skip and hope the later points
+    % along the arc are better separated.
     i=1;
 else
     if ~exist('d_min','var') || isempty(d_min)
       d_min = 1e-9;
     end 
 
+    % Calculate r^2 from points A & B to each mesh point on face. Add rA and rB.
     sumdsquared = (A(1)-x).^2+(A(2)-y).^2+(B(1)-x).^2+(B(2)-y).^2;
 
     abhat = (B-A)/norm(B-A);
+    % r = <x,y>
+    % (r-A)\times\hat{AB}
+    % Because all points are coplanar, we can ignore x,y components of product.
     Pperpd = (x-A(1))*abhat(2)-(y-A(2))*abhat(1);
 
     mindee = min(sumdsquared(Pperpd>d_min));
-
-    i = find(sumdsquared==mindee);
+    if isempty(mindee)
+        % If the projection does something weird for part of the path this will
+        % ensure some return value. If an entire path is screwed up, this is 
+        % likely to cause the direction checker to fail.
+        i=1;
+    else
+        i = find(sumdsquared==mindee);
+    end
 end
 end
 
