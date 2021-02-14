@@ -1,5 +1,6 @@
 function indexpairs = splitContour(edgedistance, threshold, debug)
 % function indexpairs = splitcontour(edgedistance)
+%
 % Takes a vector of distance products for each point on contour line. If
 % contour touches an edge, want to discard all edge points after the first
 % (or last), and start a new path if that contour departs from the edge

@@ -1,4 +1,9 @@
 function energizeContours(model,selname,current,coilindex)
+% function energizeContours(model,selname,current,coilindex)
+%
+% Add edge currents to physics node, apply specified amount of current.
+% 
+% ARR 2020.07.16
 
 if ~exist('selname','var') || isempty(selname)
   selname = 'csel1';

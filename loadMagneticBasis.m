@@ -1,4 +1,10 @@
 function sourcecell = loadMagneticBasis(model,Vm, maxl, basisfunctions, bubble)
+% sourcecell = loadMagneticBasis(model,Vm, maxl, basisfunctions, bubble)
+%
+% Loads magnetic basis functions from doi:10.1103/PhysRevA.99.042112 to a table
+% to project a calculated Vm into components.
+%
+% ARR 2020-07-20
 
 if ~exist('Vm','var') || isempty(Vm)
   Vm='Vm';

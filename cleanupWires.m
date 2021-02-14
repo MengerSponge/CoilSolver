@@ -1,4 +1,12 @@
 function cleanupWires(model,linetype)
+% function cleanupWires(model, linetype)
+%
+% Look for a wire labeled #1. Remove it. Increment counter, and look for the
+% next wire. Continue process until the next sequentially numbered wire doesn't
+% exist. As long as the wires were inserted programatically, this will find all
+% of the inserted wires.
+% 
+% ARR 2020.07.17
 
 if ~exist('linetype','var') || isempty(linetype)
     linetype = 'ic';
@@ -17,8 +25,5 @@ while searching
        searching = false;
    end
 end
-% model.component('comp1').geom('geom1').run;
-% try
-% model.component('comp1').physics('mf').feature.remove('edc1');
-% end
+
 end

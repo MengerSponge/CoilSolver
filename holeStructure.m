@@ -1,9 +1,13 @@
 function holes = holeStructure
 % holes = holeStructure
+%
 % Quick method to generate cell array with hole locations and radii on each
 % planar face of "ScalarBasis". It should be possible to extract this data
 % automagically, but that's tedious and dangerous.
-
+%
+% Each hole is given by a list of (x,y,z,r), with coordinates in model-space
+% 
+% ARR 2020-07-17
 holes = cell(6,1);
 
 holes{2} = [ 0.3  -1.2  0.3  0.1325;...
