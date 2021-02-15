@@ -1,5 +1,6 @@
 function reverse = checkDirection(x, y, Vm, wirepath, wireVm, gradVmThreshold, verbose, debugme)
 % function reverse = checkDirection(model, wirepath, M)
+% 
 % Takes wirepaths directly from splitcontour (ie still in transformed
 % coordinates), and checks Vm to left and right of path, and ensures that
 % the local gradient is oriented correctly.

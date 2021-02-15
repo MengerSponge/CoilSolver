@@ -1,5 +1,6 @@
 function filepath = makeSectionwise(facedata, coilname, savepath)
 % filepath = coilpath_to_sectionwise(facedata, coilname, savepath)
+% 
 % Takes data in facedata cell structure and writes contours to a
 % comsol-readable sectionwise text file. Models can then import this file
 % directly to their geometry, rather than loading each curve individually.

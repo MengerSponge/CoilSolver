@@ -1,12 +1,12 @@
 function couplings = singleSigmaSolve(Vm, resolution, basisfunctions, bubble, maxl)
 % couplings = singleSigmaSolve(model, order, basis)
-%{
-Generates coils for a single element of basis, calculates strength of
-interaction of resulting field on central region. Returns vector of
-couplings for each Sigma.
-
-Austin Reid 2020.07.18
-%}
+%
+% Generates coils for a single element of basis, calculates strength of
+% interaction of resulting field on central region. Returns vector of
+% couplings for each Sigma.
+% 
+% ARR 2020.07.18
+%
 
 import com.comsol.model.*
 import com.comsol.model.util.*
