@@ -1,16 +1,17 @@
-function couplings = spiralSolve(Vms,faceassign, resolution, basisfunctions, bubble, maxl)
-% couplings = spiralSolve(Vms,faceassign, resolution, basisfunctions, bubble, maxl)
-%{
-Given a pair of scalar potentials (in Vms) and an assignment array of which Vms
-should be used for each resulting face (faceassign), generate coils for a single
-constant spiral, calculates strength of interaction of resulting field on
-central region. Returns vector of couplings for eachSigma.
-
-Vms = {'z+0.1*atan2(x,y)/(2*pi)','z+0.1*atan2(y,-x)/(2*pi)-0.025'};
-faceassign = {[3,4,5],[2]};
-
-Austin Reid 2021.02.13
-%}
+function couplings = spiralSolve(faceassign, spacing, basisfunctions, bubble, maxl)
+% couplings = spiralSolve(faceassign, spacing, basisfunctions, bubble, maxl)
+% 
+% Given a scalar potential (Vm), a spacing (in meters), and an assignment array of
+% which Vms should be used for each resulting face (faceassign), generate coils
+% for a single constant spiral, calculates strength of interaction of resulting 
+% field on central region. Returns vector of couplings for eachSigma.
+% 
+% Vms = {'z+0.1*atan2(x,y)/(2*pi)','z+0.1*atan2(y,-x)/(2*pi)-0.025'};
+% faceassign = {[3,4,5],[2]};
+% 
+% TODO: Extend with dictionary to generate constant fields in X,Y directions.
+% 
+% Austin Reid 2021.02.13
 
 import com.comsol.model.*
 import com.comsol.model.util.*
@@ -18,6 +19,12 @@ import com.comsol.model.util.*
 if ~exist('maxl','var') || isempty(maxl)
   maxl=10;
 end
+
+Vm = 'z';
+
+resolution = -2.4:spacing:2.4;
+Vms = {[Vm '+' num2str(spacing) '*atan2(x,y)/(2*pi)'], ...
+       [Vm '+' num2str(spacing) '*atan2(y,-x)/(2*pi)-0.025']};
 
 tic
 %One time setup:
@@ -30,7 +37,9 @@ ModelUtil.showProgress(true);
 cleanupWires(model,'pol')
 cleanupWires(model,'ic')
 
-holedata = holeStructure;
+% faceassign is COMSOL indexed. Holestructure is matlab-indexed. Fix the
+% off-by-one issue.
+holedata = holeStructure(cat(2,faceassign{1},faceassign{2})-1);
 
 t = toc;
 disp(['Setup took ' num2str(round(t)) ' s'])
@@ -40,7 +49,6 @@ disp(['Setup took ' num2str(round(t)) ' s'])
 
 nfaces = length(faceassign{1})+length(faceassign{2});
 facedata = cell(nfaces,1);
-newfacedata = cell(nfaces,1);
 facecount = [0,length(faceassign{1})];
 
 for Vmi = 1:2

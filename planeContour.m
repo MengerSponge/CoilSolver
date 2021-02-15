@@ -50,6 +50,14 @@ if verbose, disp('Extracting scalar potentials'), end
 
 data = extractScalarPotentials(model, facecount);
 
+%{
+We want to handle levels passed as either a number of turns to return, or
+as a vector of explicit values to return windings along. If asked to return
+a set number of turns, figure out what those levels should be before doing
+anything else
+%}
+
+if length(nlevels)==1
 
 %Calculate global range of scalar potential on all imported surfaces
 Vmin = 1.1e10;
@@ -68,6 +76,9 @@ end
 %Generate vector of equipotential values
 tempLevels = linspace(Vmin,Vmax,nlevels+2);
 levels = tempLevels(2:nlevels+1);
+else
+    levels = nlevels;
+end
 
 % Close all figures--we're going to make new ones and we want to know their
 % indices when they're created.
