@@ -148,11 +148,11 @@ else
             pt = interparc(n,x,y,mode);
             dpt = diff(pt);
             ell = sqrt(mean(sum(dpt.^2,2)));
-            err = abs(spacing-ell)/spacing;
+            err = ell/spacing;
         else
             refining = false;
         end
-        if err<0.1
+        if abs(1-err)<0.1
             refining = false;
         end
     end
