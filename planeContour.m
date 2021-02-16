@@ -11,6 +11,10 @@ if ~exist('facecount','var') || isempty(facecount)
   facecount=1:6;
 end
 
+if ~exist('inside','var') || isempty(inside)
+  inside=[0,0,0];
+end
+
 if ~exist('nlevels','var') || isempty(nlevels)
   nlevels=20;
 end

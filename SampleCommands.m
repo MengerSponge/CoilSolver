@@ -9,18 +9,18 @@ open_models = ModelUtil.tags();
 model = ModelUtil.model('Model');
 
 %% Evaluate along grid
-x0 = -0.24:0.02:0.24;
-y0 = 0;
+x0 = 0;
+y0 = -0.24:0.02:0.24;
 z0 = -0.16:0.02:0.16;
 
 [x,y,z] = meshgrid(x0, y0, z0);
-[px,pz] = meshgrid(x0,z0);
+[py,pz] = meshgrid(y0,z0);
 
 xx = [x(:),y(:),z(:)]';
-pp = [px(:),pz(:)]';
+pp = [py(:),pz(:)]';
 
 bX = mphinterp(model,'mf.Bx','coord',xx,'dataset','dset3');
 bY = mphinterp(model,'mf.By','coord',xx,'dataset','dset3');
 bZ = mphinterp(model,'mf.Bz','coord',xx,'dataset','dset3');
 
-rect_bZ = reshape(bZ,[length(z0),length(x0)]);
+rect_bZ = reshape(bZ,[length(z0),length(y0)]);

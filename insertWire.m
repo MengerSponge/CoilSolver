@@ -1,4 +1,4 @@
-function varargout = insertWire(model, contourdata, icN, newsel, linetype)
+function varargout = insertWire(model, contourdata, icN, newsel, linetype, whichsel)
 % function insertWires(model, wiredata, tag)
 % 
 % Adds wires contained in wiredata to model, identified with 'tag'. If user
@@ -23,6 +23,10 @@ end
 
 if ~exist('linetype','var') || isempty(linetype)
   linetype='ic';
+end
+
+if ~exist('whichsel','var') || isempty(whichsel)
+  whichsel='csel1';
 end
 
 % First identify wires in model and find an adjacent index.
@@ -72,8 +76,8 @@ end
 % end
 
 if strcmp(linetype,'ic')
-    geonode.feature(['ic' num2str(wireN)]).set('contributeto', 'csel1');
+    geonode.feature(['ic' num2str(wireN)]).set('contributeto', whichsel);
 else
-    geonode.feature(['pol' num2str(wireN)]).set('contributeto', 'csel1');
+    geonode.feature(['pol' num2str(wireN)]).set('contributeto', whichsel);
 end
 end

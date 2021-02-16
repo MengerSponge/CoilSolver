@@ -31,7 +31,7 @@ k(ktheta>179.8)=[];
 
 shape = length(k);
 
-if abs(sum(ktheta(ktheta<179.8)) - (shape-2)*180)<10*eps
+if abs(sum(ktheta(ktheta<179.9)) - (shape-2)*180)<10*eps
     disp("Didn't get correct polygon order... whoops!")
 end
 
@@ -45,6 +45,9 @@ end
 
 phi = -phis(abs(phis)==(min(abs(phis))));
 
+if length(phi)>1
+    phi = phi(1);
+end
 % anchor = meshdata(1:2,find(meshdata(1,:)==min(meshdata(1,k))));
 % 
 % swivel1 = meshdata(1:2,k(1));
