@@ -1,4 +1,4 @@
-function facedata = planeContour(model, facecount, inside, nlevels,verbose,showy,debug,evalfunc)
+function varargout = planeContour(model, facecount, inside, nlevels,verbose,showy,debug,evalfunc)
 % facedata = planeContour(model, facecount, inside, nlevels,verbose,showy,debug)
 % 
 % Many of these parameters are optional. This method takes a model with specified planar faces,
@@ -88,6 +88,12 @@ end
 % indices when they're created.
 if ~showy, close all, end
 
+if debug
+    debugcell = cell(length(facecount),1);
+    for i=1:length(facecount)
+        debugcell{i} = cell(nlevels,1);
+    end
+end
 facedata = {};
 
 for i = 1:length(data)
@@ -140,9 +146,14 @@ for i = 1:length(data)
                 % split the contours when they hit an edge.
                 for splitindex=1:pathpairs
                     temppath = pts(:,subpaths(1,splitindex):subpaths(2,splitindex));
-                    reverse = checkDirection(x, y, Vm, temppath, level, 0.5);
+                    [reverse, votes] = checkDirection(x, y, Vm, temppath, level, 0.2,verbose,[]);
                     if reverse
                         temppath = fliplr(temppath);
+                    end
+                    if debug
+                        if abs(mean(votes))<0.5
+                            debugcell{i}{j} = votes;
+                        end
                     end
                     if isempty(contours{j})
                         contours{j}={temppath};
@@ -160,9 +171,15 @@ for i = 1:length(data)
     end
     if showy
         set(fighandle,'Visible','on');
+        pbaspect([1 1 1])
     else
         clf(fighandle);
     end
     facedata{i} = {x,y,Vm,M,contours};
 % end
+end
+
+varargout{1} = facedata;
+if nargout>=2
+    varargout{2} = debugcell;
 end

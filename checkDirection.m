@@ -1,4 +1,4 @@
-function reverse = checkDirection(x, y, Vm, wirepath, wireVm, gradVmThreshold, verbose, debugme)
+function varargout = checkDirection(x, y, Vm, wirepath, wireVm, gradVmThreshold, verbose, debugme)
 % function reverse = checkDirection(model, wirepath, M)
 % 
 % Takes wirepaths directly from splitcontour (ie still in transformed
@@ -9,7 +9,7 @@ function reverse = checkDirection(x, y, Vm, wirepath, wireVm, gradVmThreshold, v
 
 
 if ~exist('gradVmThreshold','var') || isempty(gradVmThreshold)
-  gradVmThreshold = .5;
+  gradVmThreshold = .2;
 end
 
 if ~exist('verbose','var') || isempty(verbose)
@@ -63,9 +63,15 @@ elseif directioncode>gradVmThreshold
     reverse = false;
 else
     reverse = false;
+    disp(['For ' num2str(wireVm) ' voted ' num2str(directioncode)])
     warning('Vm directionality not clear. Need to improve stencil resolution?')
 end
 
+varargout{1} = reverse;
+
+if nargout>=2 % return extra data for the curious
+    varargout{2} = votes;
+end
 end
 
 
