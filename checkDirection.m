@@ -30,6 +30,7 @@ xpts = wirepath(1,:);
 ypts = wirepath(2,:);
 
 votes = zeros(1,length(xpts)-1);
+wirelength = 0;
 
 for n=1:(length(xpts)-1)
     % for each pair of points along path, find the closest mesh point.
@@ -41,6 +42,8 @@ for n=1:(length(xpts)-1)
         i(2:end)=[];
     end
     AB = [xpts(n+1)-xpts(n), ypts(n+1)-ypts(n)];
+    ABlong = norm(AB);
+    
     APi= [x(i)-xpts(n), y(i)-ypts(n)];
     
     % if AB x APi > 0, Pi is to the left.
@@ -50,10 +53,11 @@ for n=1:(length(xpts)-1)
     % from wire to wire. Calculate the difference in Vm between points
     Vmgrad = sign(Vm(i)-wireVm);
     
-    votes(n) = direction*Vmgrad;
+    votes(n) = direction*Vmgrad*ABlong;
+    wirelength = wirelength+ABlong;
 end
 
-directioncode = mean(votes);
+directioncode = sum(votes/wirelength);
 
 if directioncode<-gradVmThreshold
     if verbose disp('Kept direction'), end
