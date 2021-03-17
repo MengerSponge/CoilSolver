@@ -52,7 +52,7 @@ if gradient is backwards, flip curve
 
 if verbose, disp('Extracting scalar potentials'), end
 
-data = extractScalarPotentials(model, facecount);
+data = extractScalarPotentials(model, facecount, evalfunc);
 
 %{
 We want to handle levels passed as either a number of turns to return, or
