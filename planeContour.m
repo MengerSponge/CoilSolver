@@ -138,9 +138,9 @@ for i = 1:length(data)
                         tracker(pt,hull) = dot(P,P);
                     end
                 end
-                % Take the product of all those distances, and use that to
-                % decide which points are "running along an edge".
-                tracker = prod(tracker,2);
+                % Select the shortest of those distances, and use that to tell 
+                % which points are "running along an edge".
+                tracker = min(tracker,[],2);
                 subpaths = splitContour(tracker,[],[]);
                 [~,pathpairs] = size(subpaths);
                 % split the contours when they hit an edge.

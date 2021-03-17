@@ -14,7 +14,7 @@ function indexpairs = splitContour(edgedistance, threshold, debug)
 % ARR 2020.03.07
 
 if ~exist('threshold','var') || isempty(threshold)
-  threshold = 1e-14;
+  threshold = 1e-12;
 end
 
 if ~exist('debug','var') || isempty(debug)
