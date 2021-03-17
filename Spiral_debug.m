@@ -15,7 +15,7 @@ model.label('Spiral-debug.mph');
 
 model.param.set('base', '0.5[m]');
 model.param.set('height', '1.0[m]');
-model.param.set('coilsep', '0.01[m]');
+model.param.set('coilsep', '0.1[m]');
 
 model.component.create('comp1', true);
 
