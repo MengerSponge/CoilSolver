@@ -1,3 +1,6 @@
+%% Full Spiral solve on "house" model:
+wiredata = arbitrarySpiralSolve(model,{[5,6,7,8],[1,2,3,4]},.05);
+
 %% Spiral Tester
 couplings = spiralSolve({[2,5,7],[3]},.1, [], [], 3);
 
