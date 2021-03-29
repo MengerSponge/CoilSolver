@@ -1,4 +1,4 @@
-function wiredata = arbitrarySpiralSolve(model,faceassign, spacing, debug)
+function wiredata = arbitrarySpiralSolve(model,faceassign, spacing, wirestep, debug)
 % couplings = arbitrarySpiralSolve(model,faceassign, spacing)
 % 
 % Given a meshed model with a mfnc node, a spacing (in m), and an
@@ -12,6 +12,10 @@ function wiredata = arbitrarySpiralSolve(model,faceassign, spacing, debug)
 % faceassign = {[3,4,5],[2]};
 % 
 % Austin Reid 2021.02.15
+
+if ~exist('wirestep','var') || isempty(wirestep)
+  wirestep=[0.015,0.005];
+end
 
 if ~exist('debug','var') || isempty(debug)
   debug = false;
@@ -73,7 +77,7 @@ end
 
 % Resample facedata
 disp('Resampling wires')
-wiredata = splitResampleContours(facedata, holedata, [0.002,0.001], 'spline');
+wiredata = splitResampleContours(facedata, holedata, wirestep, 'spline');
 
 % sigmafile = 'Spiral-ScalarBasisVmDirect.mph';
 mphsave(model)%,sigmafile)

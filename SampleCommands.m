@@ -11,6 +11,9 @@ open_models = ModelUtil.tags();
 % re-connect model on server to Matlab command prompt
 model = ModelUtil.model('Model');
 
+% remove model from server:
+ModelUtil.remove('Model');
+
 %% Evaluate along grid
 x0 = 0;
 y0 = -0.24:0.02:0.24;
