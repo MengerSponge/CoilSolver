@@ -1,11 +1,13 @@
-function varargout = planeContour(model, facecount, inside, nlevels,verbose,showy,debug,evalfunc)
-% facedata = planeContour(model, facecount, inside, nlevels,verbose,showy,debug)
+function varargout = planeContour(model, facecount, inside, nlevels,verbose,showy,debug,manual_clean,evalfunc)
+% facedata = planeContour(model, facecount, inside, nlevels,verbose,showy,manual_clean,debug)
 % 
 % Many of these parameters are optional. This method takes a model with specified planar faces,
 % evaluates a prescribed function on those faces, then solves for the contours on those faces.
 % Contours are returned alongside the facedata in a nicely structured cell array.
 % 
 % ARR 2020.03.10
+
+global modified_contours
 
 if ~exist('facecount','var') || isempty(facecount)
   facecount=1:6;
@@ -29,6 +31,10 @@ end
 
 if ~exist('debug','var') || isempty(debug)
   debug=false;
+end
+
+if ~exist('manual_clean','var') || isempty(manual_clean)
+  manual_clean=false;
 end
 
 if ~exist('evalfunc','var') || isempty(evalfunc)
@@ -175,6 +181,25 @@ for i = 1:length(data)
     else
         clf(fighandle);
     end
+    if manual_clean
+        app = ContourEditorApp(contours,levels,x,y,Vm,i,length(data)); % myOutputData is also a global within a function in myApp
+        uiwait(app.UIFigure); % pause mfile execution to let the user do things in myApp
+        contours = [];
+        contours = modified_contours;
+        modified_contours=[];
+
+        for idx =1:length(levels)
+            if ~isempty(contours{idx})
+                for jdx = 1:length(contours{idx})
+                    [reverse, votes] = checkDirection(x, y, Vm, contours{idx}{jdx}, levels(jdx), 0.2,verbose,[]);
+                    if reverse
+                       fliplr(contours{idx}{jdx});
+                    end
+                end
+            end
+        end  
+    end
+    
     facedata{i} = {x,y,Vm,M,contours};
 % end
 end
